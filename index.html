@@ -4,111 +4,110 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>原稿ミッション</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 <style>
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { margin: 0; font-family: 'Hiragino Sans','Noto Sans JP',sans-serif; background: #1c1a1f; color: #e8e3d9; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+body { font-family: 'Hiragino Sans','Noto Sans JP',sans-serif; background: #1c1a1f; color: #e8e3d9; min-height: 100vh; }
 ::-webkit-scrollbar { width:0; height:0; }
-input, select, button { font-family: inherit; }
+button, select, input { font-family: inherit; }
+.tab-bar { position: sticky; top: 0; z-index: 20; background: rgba(28,26,31,0.97); backdrop-filter: blur(8px); border-bottom: 1px solid #3a3640; display: flex; overflow-x: auto; padding: 10px 8px 0; gap: 4px; }
+.tab { flex-shrink: 0; padding: 8px 14px; border-radius: 10px 10px 0 0; border: none; background: transparent; color: #9b9389; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; }
+.tab.active { background: #26222a; color: #e8e3d9; font-weight: 600; border-bottom-color: #d4744a; }
+.header { padding: 16px; border-bottom: 1px solid #3a3640; }
+.progress-bar-wrap { height: 8px; width: 100%; background: #2e2a32; border-radius: 999px; overflow: hidden; margin: 10px 0; }
+.progress-bar { height: 100%; background: linear-gradient(90deg,#d4744a,#e8a456); border-radius: 999px; transition: width 0.5s; }
+.signal-box { padding: 10px 12px; border-radius: 10px; background: #2e2a32; display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.day-card { border-radius: 12px; border: 1px solid #3a3640; background: #26222a; margin: 0 12px 8px; }
+.day-card.today { border-color: #d4744a; }
+.day-card.past { opacity: 0.6; }
+.day-header { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: none; border: none; color: inherit; cursor: pointer; text-align: left; }
+.day-body { border-top: 1px solid #3a3640; padding: 8px 16px 14px; }
+.mission-row { display: flex; align-items: center; gap: 12px; padding: 6px 0; }
+.check-btn { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #5a5560; background: none; cursor: pointer; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; }
+.check-btn.done { border-color: #5fae6e; background: #5fae6e; }
+.mission-label { flex: 1; font-size: 13px; }
+.mission-label.done { text-decoration: line-through; color: #6b6660; }
+.diff-sel { font-size: 11px; padding: 3px 6px; border-radius: 6px; border: 1px solid #3a3640; background: #1c1a1f; color: #9b9389; cursor: pointer; }
+.tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+.tag-today { background: #d4744a; color: #1c1a1f; font-weight: 700; }
+.tag-early { background: #3a3640; color: #9b9389; }
+.tag-zero { background: #4a3530; color: #e8a456; }
+.tag-zero-t { background: #3a3a4a; color: #a8b8e8; }
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; padding: 12px; }
+.cal-cell { aspect-ratio: 1; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; position: relative; overflow: hidden; background: #2e2a32; cursor: pointer; }
+.cal-cell .fill { position: absolute; bottom: 0; left: 0; right: 0; transition: height 0.5s; }
+.cal-cell .label { position: relative; z-index: 1; font-size: 10px; font-weight: 600; }
+.cal-cell.today-cell { border: 1px solid #d4744a; }
+.countdown { font-size: 28px; font-weight: 700; color: #d4744a; }
+.stats-row { display: flex; gap: 12px; margin-top: 8px; }
+.stat-box { flex: 1; background: #2e2a32; border-radius: 10px; padding: 10px 12px; }
+.stat-val { font-size: 20px; font-weight: 700; color: #d4744a; }
+.stat-lbl { font-size: 11px; color: #9b9389; margin-top: 2px; }
+.dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 24px; }
+.dialog { background: #26222a; border-radius: 16px; padding: 22px; max-width: 300px; border: 1px solid #3a3640; width: 100%; }
+.btn-primary { flex: 1; padding: 10px; border-radius: 10px; border: none; background: #d4744a; color: #1c1a1f; font-weight: 700; font-size: 14px; cursor: pointer; }
+.btn-secondary { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #3a3640; background: none; color: #e8e3d9; font-size: 14px; cursor: pointer; }
+.btn-danger { flex: 1; padding: 10px; border-radius: 10px; border: none; background: #d4574a; color: #fff; font-size: 14px; cursor: pointer; }
+.confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 100; overflow: hidden; }
+.confetti-piece { position: absolute; width: 10px; height: 10px; top: -10px; animation: fall linear forwards; }
+@keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+.bottom-hint { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(28,26,31,0.95); backdrop-filter: blur(8px); border-top: 1px solid #3a3640; padding: 10px 16px; font-size: 12px; color: #9b9389; text-align: center; }
+.section-list { padding: 12px 0 80px; }
+.settings-panel { margin-top: 12px; padding: 12px; border-radius: 10px; background: #1c1a1f; border: 1px solid #3a3640; display: flex; flex-direction: column; gap: 10px; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; }
+.gear-btn { background: none; border: none; padding: 6px; cursor: pointer; color: #9b9389; font-size: 18px; }
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel" data-presets="react">
-const { useState, useEffect, useMemo, useCallback } = React;
-const STORAGE_KEY = 'genkou-mission-v1';
-const DIFF_H = { low:0.5, mid:1.5, high:3 };
+<div id="app"></div>
+<div class="confetti-container" id="confetti"></div>
 
-// -------- 日付ユーティリティ --------
+<script>
+const STORAGE_KEY = 'genkou-mission-v3';
+const DIFF_H = { low:1, mid:2, high:4 };
+const HOURS_PER_DAY = 5;
+
 function dateKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
 function addDays(d,n){ const r=new Date(d); r.setDate(r.getDate()+n); return r; }
 const WJ=['日','月','火','水','木','金','土'];
-function fmtDate(d){ return (d.getMonth()+1)+'/'+d.getDate()+'('+WJ[d.getDay()]+')'; }
-function fmtFull(d){ return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+'('+WJ[d.getDay()]+')'; }
+function fmtDate(s){ const d=parseDate(s); return (d.getMonth()+1)+'/'+d.getDate()+'('+WJ[d.getDay()]+')'; }
 
-// -------- ゼロ日定義 --------
-const FIXED_ZERO = {
-  '2026-07-29':'ジム後・疲労',
-  '2026-08-07':'ゴッホ展',
-  '2026-08-30':'フェス＋食事',
-};
-const TENTATIVE_ZERO = {
-  '2026-07-26':'コラボカフェ(仮)',
-  '2026-08-17':'USJ(仮)',
-  '2026-08-18':'USJ翌日(仮)',
-};
-// 月水金は早寝（夜作業ゼロ扱いだが日中作業可→ゼロ日には含めない、ラベルだけ表示）
-function isEarlyNight(d){ const dow=d.getDay(); return dow===1||dow===3||dow===5; }
-function isZeroDay(key){ return !!(FIXED_ZERO[key]||TENTATIVE_ZERO[key]); }
-function zeroDayLabel(key){ return FIXED_ZERO[key]||TENTATIVE_ZERO[key]||null; }
+const FIXED_ZERO = {'2026-07-29':'ジム後','2026-08-07':'ゴッホ展','2026-08-30':'フェス'};
+const TENT_ZERO  = {'2026-07-26':'コラボカフェ(仮)','2026-08-17':'USJ(仮)','2026-08-18':'USJ翌日(仮)'};
+function isZero(k){ return !!(FIXED_ZERO[k]||TENT_ZERO[k]); }
+function zeroLabel(k){ return FIXED_ZERO[k]||TENT_ZERO[k]||null; }
+function isEarlyNight(k){ const d=parseDate(k).getDay(); return d===1||d===3||d===5; }
 
-// -------- スケジュール生成 --------
-// 難易度バランスを考慮した配置：高→中→低を繰り返すパターンで均等化
-function buildSchedule(panels, startDate, endDate) {
-  // 使える日を収集
-  const usableDays = [];
-  let cur = new Date(startDate);
-  while (cur <= endDate) {
-    const key = dateKey(cur);
-    if (!isZeroDay(key)) usableDays.push(key);
-    cur = addDays(cur, 1);
+// -------- スケジュール生成（難易度インターリーブ）--------
+function buildSchedule(panels, startStr, endStr){
+  const usable=[];
+  let cur=parseDate(startStr), end=parseDate(endStr);
+  while(cur<=end){ const k=dateKey(cur); if(!isZero(k)) usable.push(k); cur=addDays(cur,1); }
+  if(!usable.length) return {};
+  const todo=panels.filter(p=>!p.locked);
+  const high=todo.filter(p=>p.difficulty==='high');
+  const mid =todo.filter(p=>p.difficulty==='mid');
+  const low =todo.filter(p=>p.difficulty==='low');
+  const ordered=[];
+  const mx=Math.max(high.length,mid.length,low.length);
+  for(let i=0;i<mx;i++){
+    if(i<high.length) ordered.push(high[i]);
+    if(i<mid.length)  ordered.push(mid[i]);
+    if(i<low.length)  ordered.push(low[i]);
   }
-  if (usableDays.length === 0) return {};
-
-  // 未完了パネルを難易度でソート：高→中→低を交互に配置
-  const todo = panels.filter(p => !p.locked);
-  // 難易度グループに分ける
-  const high = todo.filter(p => p.difficulty === 'high');
-  const mid  = todo.filter(p => p.difficulty === 'mid');
-  const low  = todo.filter(p => p.difficulty === 'low');
-
-  // インターリーブ：高1→中1→低1→高1→中1→低1...
-  const ordered = [];
-  const maxLen = Math.max(high.length, mid.length, low.length);
-  for (let i = 0; i < maxLen; i++) {
-    if (i < high.length) ordered.push(high[i]);
-    if (i < mid.length)  ordered.push(mid[i]);
-    if (i < low.length)  ordered.push(low[i]);
-  }
-
-  // 1日あたりのコマ数を計算（均等配分）
-  const perDay = Math.max(1, Math.ceil(ordered.length / usableDays.length));
-  const map = {};
-  usableDays.forEach(d => { map[d] = []; });
-  let idx = 0;
-  for (const day of usableDays) {
-    for (let i = 0; i < perDay && idx < ordered.length; i++) {
-      map[day].push(ordered[idx].id);
-      idx++;
-    }
+  const perDay=Math.max(1,Math.ceil(ordered.length/usable.length));
+  const map={};
+  usable.forEach(d=>{ map[d]=[]; });
+  let idx=0;
+  for(const day of usable){
+    for(let i=0;i<perDay&&idx<ordered.length;i++){ map[day].push(ordered[idx].id); idx++; }
   }
   return map;
 }
 
-// -------- 信号色 --------
-function signalInfo(schedule, panels, deadline, todayKey) {
-  const remaining = panels.filter(p => !p.locked);
-  if (remaining.length === 0) return { color:'#5fae6e', label:'完成！', emoji:'🎉' };
-  // 今日以降の作業日を数える
-  const futureDays = Object.keys(schedule).filter(k => k >= todayKey).length;
-  const deadlineKey = deadline;
-  const daysToDeadline = Math.round((parseDate(deadlineKey) - parseDate(todayKey)) / 86400000);
-  // 残コマ総時間 vs 残日数×5h
-  const remainH = remaining.reduce((s,p)=>s+DIFF_H[p.difficulty||'mid'],0);
-  const availH = futureDays * 5;
-  const ratio = availH > 0 ? remainH / availH : 999;
-  if (ratio <= 0.6) return { color:'#5fae6e', label:'余裕あり', emoji:'🟢' };
-  if (ratio <= 0.9) return { color:'#e8c34a', label:'ペース注意', emoji:'🟡' };
-  return { color:'#d4574a', label:'締切危険', emoji:'🔴' };
-}
-
-// -------- 初期データ：9月本 --------
-function buildSept() {
-  const panels = [
-    // 表紙（カラー・30h想定→高×10）
+// -------- 初期データ --------
+function buildSept(){
+  const panels=[
     {id:'p1-c1',page:'P1/28 表紙',label:'アタリ',difficulty:'high',locked:false},
     {id:'p1-c2',page:'P1/28 表紙',label:'ラフ1',difficulty:'high',locked:false},
     {id:'p1-c3',page:'P1/28 表紙',label:'ラフ2',difficulty:'high',locked:false},
@@ -119,458 +118,435 @@ function buildSept() {
     {id:'p1-c8',page:'P1/28 表紙',label:'仕上げ',difficulty:'high',locked:false},
     {id:'p1-c9',page:'P1/28 表紙',label:'翌日チェック',difficulty:'high',locked:false},
     {id:'p1-c10',page:'P1/28 表紙',label:'最終確認',difficulty:'high',locked:false},
-    // 目次
     {id:'p3-c1',page:'P3 目次',label:'テキスト入力',difficulty:'low',locked:false},
-    // P8
     {id:'p8-c1',page:'P8',label:'4コマ目 下書き',difficulty:'mid',locked:false},
     {id:'p8-c2',page:'P8',label:'4コマ目 仕上げ',difficulty:'mid',locked:false},
-    // P17
     {id:'p17-c1',page:'P17',label:'2コマ目 下書き→ペン入れ',difficulty:'mid',locked:false},
     {id:'p17-c2',page:'P17',label:'3コマ目 仕上げ',difficulty:'mid',locked:false},
     {id:'p17-c3',page:'P17',label:'4コマ目 下書き〜仕上げ',difficulty:'mid',locked:false},
-    // P18
     {id:'p18-c1',page:'P18',label:'1コマ目',difficulty:'mid',locked:false},
     {id:'p18-c2',page:'P18',label:'2コマ目',difficulty:'mid',locked:false},
     {id:'p18-c3',page:'P18',label:'3コマ目',difficulty:'mid',locked:false},
     {id:'p18-c4',page:'P18',label:'4コマ目',difficulty:'mid',locked:false},
-    // P19
     {id:'p19-c1',page:'P19',label:'4コマ目 下書き',difficulty:'mid',locked:false},
     {id:'p19-c2',page:'P19',label:'4コマ目 仕上げ',difficulty:'mid',locked:false},
-    // P24
     {id:'p24-c1',page:'P24',label:'ペン入れ',difficulty:'mid',locked:false},
     {id:'p24-c2',page:'P24',label:'仕上げ',difficulty:'mid',locked:false},
-    // 奥付
     {id:'p25-c1',page:'P25 奥付',label:'残り入力',difficulty:'low',locked:false},
-    // P26
     {id:'p26-c1',page:'P26',label:'修正',difficulty:'mid',locked:false},
     {id:'p26-c2',page:'P26',label:'レイアウト配置',difficulty:'mid',locked:false},
     {id:'p26-c3',page:'P26',label:'仕上げ',difficulty:'mid',locked:false},
   ];
-  const start = new Date(2026,6,22);
-  const end   = new Date(2026,8,3);
-  const schedule = buildSchedule(panels, start, end);
-  return { id:'sept', title:'9月 再録本', mode:'signal', deadline:'2026-09-04', start:'2026-07-22', end:'2026-09-03', panels, schedule };
+  return {id:'sept',title:'9月 再録本',mode:'signal',deadline:'2026-09-04',start:'2026-07-22',end:'2026-09-03',panels,schedule:buildSchedule(panels,'2026-07-22','2026-09-03'),doneHours:0};
 }
 
-// -------- 初期データ：10月本 --------
-function buildOct() {
-  function pp(pageLabel, panels){ return panels.map((p,i)=>({...p, id:pageLabel.replace(/\s/g,'')+'-c'+(i+1), page:pageLabel})); }
-  function mk(n, panels){ return pp('P'+n, panels); }
-  function auto(n, doneCount, diff){ return Array.from({length:n},(_,i)=>({label:(i+1)+'コマ目',difficulty:diff||'mid',locked:i<doneCount})); }
-
-  const panels = [
-    ...mk(1, [{label:'表紙',difficulty:'mid',locked:true}]),
-    ...mk(2, [{label:'裏表紙',difficulty:'low',locked:true}]),
-    ...mk(3, [{label:'1コマ目',difficulty:'mid',locked:false}]),
-    ...mk(4, auto(4,4,'mid')),
-    ...mk(5, [{label:'1コマ目',difficulty:'mid',locked:true},{label:'2コマ目',difficulty:'mid',locked:true},{label:'大ゴマ',difficulty:'high',locked:false}]),
-    ...mk(6, auto(6,6,'mid')),
-    ...mk(7, auto(5,5,'mid')),
-    ...mk(8, [...auto(4,4,'mid'),{label:'5コマ目',difficulty:'mid',locked:false}]),
-    ...mk(9, [...auto(3,3,'mid'),...auto(3,0,'mid').map((p,i)=>({...p,label:(4+i)+'コマ目'}))]),
-    ...mk(10, [...auto(2,2,'mid'),{label:'3コマ目',difficulty:'high',locked:false},{label:'4コマ目',difficulty:'high',locked:false}]),
-    ...mk(11, [...auto(4,4,'mid'),{label:'5コマ目',difficulty:'mid',locked:false},{label:'6コマ目',difficulty:'mid',locked:false}]),
-    ...mk(12, [{label:'1コマ目',difficulty:'mid',locked:true},{label:'2コマ目',difficulty:'high',locked:false},{label:'3コマ目',difficulty:'high',locked:false},{label:'4コマ目',difficulty:'high',locked:false}]),
-    ...mk(13, [{label:'1コマ目',difficulty:'mid',locked:false},...auto(5,5,'mid').map((p,i)=>({...p,label:(2+i)+'コマ目'}))]),
-    ...mk(14, [{label:'1コマ目(下書き済)',difficulty:'mid',locked:false},...auto(4,0,'mid').map((p,i)=>({...p,label:(2+i)+'コマ目'}))]),
-    ...mk(15, auto(4,0,'mid')),
-    ...mk(16, [{label:'1コマ目',difficulty:'mid',locked:true},...auto(4,0,'mid').map((p,i)=>({...p,label:(2+i)+'コマ目'}))]),
-    ...mk(17, auto(5,0,'mid')),
-    ...mk(18, auto(5,0,'mid')),
-    ...mk(19, auto(5,0,'mid')),
-    ...mk(20, [...auto(3,3,'mid'),...auto(5,0,'mid').map((p,i)=>({...p,label:(4+i)+'コマ目'}))]),
-    ...mk(21, auto(4,0,'mid')),
-    ...mk(22, auto(6,0,'mid')),
-    ...mk(23, [...auto(3,3,'mid'),{label:'4コマ目',difficulty:'mid',locked:false},{label:'5コマ目',difficulty:'mid',locked:false},{label:'6コマ目',difficulty:'mid',locked:false}]),
-    ...mk(24, [{label:'1コマ目',difficulty:'mid',locked:false},...auto(3,0,'mid').map((p,i)=>({...p,label:(2+i)+'コマ目'}))]),
-    ...mk(25, auto(5,0,'mid')),
-    ...mk(26, auto(6,0,'mid')),
-    ...mk(27, auto(5,0,'mid')),
-    ...mk(28, auto(5,0,'mid')),
-    ...mk(29, auto(4,0,'mid')),
-    ...mk(30, auto(5,0,'mid')),
-    ...mk(31, auto(7,0,'mid')),
-    ...mk(32, auto(5,0,'mid')),
-    ...mk(33, auto(4,0,'mid')),
+function buildOct(){
+  function auto(page,n,done,diff){
+    return Array.from({length:n},(_,i)=>({id:page.replace(/\s/g,'')+'-c'+(i+1),page,label:(i+1)+'コマ目',difficulty:diff||'mid',locked:i<done}));
+  }
+  const panels=[
+    ...auto('P1',1,1,'mid'),
+    ...auto('P2',1,1,'low'),
+    ...auto('P3',1,0,'mid'),
+    ...auto('P4',4,4,'mid'),
+    {id:'P5-c1',page:'P5',label:'1コマ目',difficulty:'mid',locked:true},
+    {id:'P5-c2',page:'P5',label:'2コマ目',difficulty:'mid',locked:true},
+    {id:'P5-c3',page:'P5',label:'大ゴマ',difficulty:'high',locked:false},
+    ...auto('P6',6,6,'mid'),
+    ...auto('P7',5,5,'mid'),
+    ...auto('P8',5,4,'mid'),
+    {id:'P9-c1',page:'P9',label:'1',difficulty:'mid',locked:true},{id:'P9-c2',page:'P9',label:'2',difficulty:'mid',locked:true},{id:'P9-c3',page:'P9',label:'3',difficulty:'mid',locked:true},
+    {id:'P9-c4',page:'P9',label:'4(ラフ)',difficulty:'mid',locked:false},{id:'P9-c5',page:'P9',label:'5(ラフ)',difficulty:'mid',locked:false},{id:'P9-c6',page:'P9',label:'6(ラフ)',difficulty:'mid',locked:false},
+    {id:'P10-c1',page:'P10',label:'1',difficulty:'mid',locked:true},{id:'P10-c2',page:'P10',label:'2',difficulty:'mid',locked:true},
+    {id:'P10-c3',page:'P10',label:'3(下書き中)',difficulty:'high',locked:false},{id:'P10-c4',page:'P10',label:'4(下書き中)',difficulty:'high',locked:false},
+    {id:'P11-c1',page:'P11',label:'1',difficulty:'mid',locked:true},{id:'P11-c2',page:'P11',label:'2',difficulty:'mid',locked:true},{id:'P11-c3',page:'P11',label:'3',difficulty:'mid',locked:true},{id:'P11-c4',page:'P11',label:'4',difficulty:'mid',locked:true},
+    {id:'P11-c5',page:'P11',label:'5(下書き中)',difficulty:'mid',locked:false},{id:'P11-c6',page:'P11',label:'6',difficulty:'mid',locked:false},
+    {id:'P12-c1',page:'P12',label:'1',difficulty:'mid',locked:true},
+    {id:'P12-c2',page:'P12',label:'2(ラフ)',difficulty:'high',locked:false},{id:'P12-c3',page:'P12',label:'3(ラフ)',difficulty:'high',locked:false},{id:'P12-c4',page:'P12',label:'4(ラフ)',difficulty:'high',locked:false},
+    {id:'P13-c1',page:'P13',label:'1(ラフ)',difficulty:'mid',locked:false},
+    {id:'P13-c2',page:'P13',label:'2',difficulty:'mid',locked:true},{id:'P13-c3',page:'P13',label:'3',difficulty:'mid',locked:true},{id:'P13-c4',page:'P13',label:'4',difficulty:'mid',locked:true},{id:'P13-c5',page:'P13',label:'5',difficulty:'mid',locked:true},{id:'P13-c6',page:'P13',label:'6',difficulty:'mid',locked:true},
+    {id:'P14-c1',page:'P14',label:'1(下書き済)',difficulty:'mid',locked:false},
+    ...Array.from({length:4},(_,i)=>({id:'P14-c'+(i+2),page:'P14',label:(i+2)+'コマ目(ラフ)',difficulty:'mid',locked:false})),
+    ...auto('P15',4,0,'mid'),
+    {id:'P16-c1',page:'P16',label:'1',difficulty:'mid',locked:true},
+    ...Array.from({length:4},(_,i)=>({id:'P16-c'+(i+2),page:'P16',label:(i+2)+'コマ目(アタリ)',difficulty:'mid',locked:false})),
+    ...auto('P17',5,0,'mid'),
+    ...auto('P18',5,0,'mid'),
+    ...auto('P19',5,0,'mid'),
+    {id:'P20-c1',page:'P20',label:'1',difficulty:'mid',locked:true},{id:'P20-c2',page:'P20',label:'2',difficulty:'mid',locked:true},{id:'P20-c3',page:'P20',label:'3',difficulty:'mid',locked:true},
+    ...Array.from({length:5},(_,i)=>({id:'P20-c'+(i+4),page:'P20',label:(i+4)+'コマ目(ラフ)',difficulty:'mid',locked:false})),
+    ...auto('P21',4,0,'mid'),
+    ...auto('P22',6,0,'mid'),
+    {id:'P23-c1',page:'P23',label:'1',difficulty:'mid',locked:true},{id:'P23-c2',page:'P23',label:'2',difficulty:'mid',locked:true},{id:'P23-c3',page:'P23',label:'3',difficulty:'mid',locked:true},
+    {id:'P23-c4',page:'P23',label:'4(下書き済)',difficulty:'mid',locked:false},{id:'P23-c5',page:'P23',label:'5(下書き済)',difficulty:'mid',locked:false},{id:'P23-c6',page:'P23',label:'6(ラフ)',difficulty:'mid',locked:false},
+    {id:'P24-c1',page:'P24',label:'1(下書き済)',difficulty:'mid',locked:false},
+    ...Array.from({length:3},(_,i)=>({id:'P24-c'+(i+2),page:'P24',label:(i+2)+'コマ目(ラフ)',difficulty:'mid',locked:false})),
+    ...auto('P25',5,0,'mid'),
+    ...auto('P26',6,0,'mid'),
+    ...auto('P27',5,0,'mid'),
+    ...auto('P28',5,0,'mid'),
+    ...auto('P29',4,0,'mid'),
+    ...auto('P30',5,0,'mid'),
+    ...auto('P31',7,0,'mid'),
+    ...auto('P32',5,0,'mid'),
+    ...auto('P33',4,0,'mid'),
   ];
-  const start = new Date(2026,8,5); // 9月本終了後から
-  const end   = new Date(2026,9,15);
-  const unlocked = panels.filter(p=>!p.locked);
-  const schedule = buildSchedule(unlocked.map(p=>({...p})), start, end);
-  return { id:'oct', title:'10月 新刊', mode:'easy', deadline:'2026-10-16', start:'2026-09-05', end:'2026-10-15', panels, schedule };
+  return {id:'oct',title:'10月 新刊',mode:'easy',deadline:'2026-10-16',start:'2026-09-05',end:'2026-10-15',panels,schedule:buildSchedule(panels.filter(p=>!p.locked),'2026-09-05','2026-10-15'),doneHours:0};
 }
 
-function load() {
-  try { const r=localStorage.getItem(STORAGE_KEY); if(r) return JSON.parse(r); } catch(e){}
-  return [buildSept(), buildOct()];
+// -------- 状態管理 --------
+function loadState(){
+  try{ const r=localStorage.getItem(STORAGE_KEY); if(r) return JSON.parse(r); }catch(e){}
+  return {manuscripts:[buildSept(),buildOct()],activeId:'sept'};
 }
-function save(data){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); }catch(e){} }
+function saveState(s){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(s)); }catch(e){} }
 
-// -------- アイコン --------
-const Ico = ({path,size=16,stroke='#9b9389',sw=2,fill='none'}) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke={stroke} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{__html:path}}/>
-);
-const IcoChevD = p=><Ico {...p} path="<polyline points='6 9 12 15 18 9'/>"/>;
-const IcoChevU = p=><Ico {...p} path="<polyline points='18 15 12 9 6 15'/>"/>;
-const IcoPlus  = p=><Ico {...p} path="<line x1='12' y1='5' x2='12' y2='19'/><line x1='5' y1='12' x2='19' y2='12'/>"/>;
-const IcoGear  = p=><Ico {...p} path="<circle cx='12' cy='12' r='3'/><path d='M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z'/>"/>;
-const IcoX     = p=><Ico {...p} path="<line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>"/>;
+let STATE = loadState();
 
-// -------- メインアプリ --------
-function App() {
-  const [mss, setMss] = useState([]);
-  const [activeId, setActiveId] = useState(null);
-  const [loaded, setLoaded] = useState(false);
-  const [confirmPanel, setConfirmPanel] = useState(null); // {msId, panelId}
-  const [showSettings, setShowSettings] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newDeadline, setNewDeadline] = useState('');
-  const [newMode, setNewMode] = useState('easy');
-  const [expandedDay, setExpandedDay] = useState(null);
-  const [showEditPanel, setShowEditPanel] = useState(null);
+function getMs(){ return STATE.manuscripts.find(m=>m.id===STATE.activeId); }
 
-  useEffect(()=>{
-    const data = load();
-    setMss(data);
-    setActiveId(data[0]?.id||null);
-    // 今日の日付のdayを自動で開く
-    setExpandedDay(dateKey(new Date()));
-    setLoaded(true);
-  },[]);
+// -------- 紙吹雪 --------
+function launchConfetti(){
+  const container=document.getElementById('confetti');
+  const colors=['#d4744a','#e8a456','#5fae6e','#a8b8e8','#e8e3d9','#e8c34a'];
+  for(let i=0;i<80;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.left=Math.random()*100+'vw';
+    el.style.background=colors[Math.floor(Math.random()*colors.length)];
+    el.style.borderRadius=Math.random()>0.5?'50%':'2px';
+    el.style.width=(6+Math.random()*10)+'px';
+    el.style.height=(6+Math.random()*10)+'px';
+    el.style.animationDuration=(0.8+Math.random()*1.5)+'s';
+    el.style.animationDelay=(Math.random()*0.5)+'s';
+    container.appendChild(el);
+    setTimeout(()=>el.remove(), 3000);
+  }
+}
 
-  const persist = useCallback((next)=>{ save(next); },[]);
+// -------- カレンダー色計算 --------
+function calendarColors(ms){
+  // 各日付に何時間分の作業が完了したか（難易度換算）
+  // locked済みパネルのidをスケジュールの日付にマッピング
+  const panelToDay={};
+  Object.entries(ms.schedule).forEach(([day,ids])=>{ ids.forEach(id=>{ panelToDay[id]=day; }); });
+  const dayHours={};
+  ms.panels.filter(p=>p.locked).forEach(p=>{
+    const day=panelToDay[p.id];
+    if(day){ dayHours[day]=(dayHours[day]||0)+DIFF_H[p.difficulty||'mid']; }
+  });
+  return dayHours;
+}
 
-  const updateMs = (id, fn) => setMss(prev=>{ const next=prev.map(m=>m.id===id?fn(m):m); persist(next); return next; });
+// -------- 統計 --------
+function computeStats(ms){
+  const total=ms.panels.length;
+  const done=ms.panels.filter(p=>p.locked).length;
+  const doneH=ms.panels.filter(p=>p.locked).reduce((s,p)=>s+DIFF_H[p.difficulty||'mid'],0);
+  const totalH=ms.panels.reduce((s,p)=>s+DIFF_H[p.difficulty||'mid'],0);
+  const today=dateKey(new Date());
+  const deadline=ms.deadline;
+  const daysLeft=Math.max(0,Math.round((parseDate(deadline)-new Date())/86400000));
+  // 信号
+  const remainH=totalH-doneH;
+  const futureDays=Object.keys(ms.schedule).filter(k=>k>=today).length;
+  const availH=futureDays*HOURS_PER_DAY;
+  let signal='green';
+  if(remainH>0){
+    const ratio=availH>0?remainH/availH:999;
+    if(ratio>0.9) signal='red';
+    else if(ratio>0.6) signal='yellow';
+  }
+  return {total,done,doneH,totalH,remainH,daysLeft,signal};
+}
 
-  // パネル確定
-  const lockPanel = (msId, panelId) => {
-    updateMs(msId, ms=>{
-      const panels = ms.panels.map(p=>p.id===panelId?{...p,locked:true}:p);
-      // 未完了のパネルでスケジュール再計算
-      const start = parseDate(ms.start);
-      const end   = parseDate(ms.end);
-      const todo  = panels.filter(p=>!p.locked);
-      const schedule = buildSchedule(todo, start, end);
-      return {...ms, panels, schedule};
+// -------- レンダリング --------
+let confirmTarget=null;
+let expandedDay=dateKey(new Date());
+let showSettings=false;
+let showCalendar=false;
+let deleteConfirm=null;
+let showAddForm=false;
+
+function render(){
+  const app=document.getElementById('app');
+  const ms=getMs();
+  if(!ms){ app.innerHTML='<div style="padding:40px;text-align:center;color:#9b9389">原稿を追加してください</div>'; return; }
+  const stats=computeStats(ms);
+  const todayKey=dateKey(new Date());
+  const pct=stats.totalH>0?Math.round(stats.doneH/stats.totalH*100):0;
+  const signalColor=stats.signal==='green'?'#5fae6e':stats.signal==='yellow'?'#e8c34a':'#d4574a';
+  const signalLabel=stats.signal==='green'?'余裕あり':stats.signal==='yellow'?'ペース注意':'締切危険';
+  const dayHours=calendarColors(ms);
+
+  // カレンダーグリッド用日付
+  const calDays=[];
+  let cur=parseDate(ms.start), end=parseDate(ms.end);
+  while(cur<=end){ calDays.push(dateKey(cur)); cur=addDays(cur,1); }
+  const totalCalH=stats.totalH;
+
+  // タブ
+  let tabsHTML=STATE.manuscripts.map(m=>`
+    <button class="tab ${m.id===STATE.activeId?'active':''}" onclick="switchTab('${m.id}')">${m.title}</button>
+  `).join('');
+  tabsHTML+=`<button class="tab" onclick="openAddForm()">＋</button>`;
+
+  // カレンダーグリッド（月ごとに分割）
+  const monthGroups={};
+  calDays.forEach(k=>{ const m=k.slice(0,7); if(!monthGroups[m]) monthGroups[m]=[]; monthGroups[m].push(k); });
+  let calHTML='';
+  Object.entries(monthGroups).forEach(([ym, days])=>{
+    const [y,m]=ym.split('-').map(Number);
+    calHTML+=`<div style="font-size:12px;font-weight:700;color:#9b9389;padding:8px 12px 4px">${m}月</div>`;
+    calHTML+='<div class="cal-grid">';
+    WJ.forEach(w=>{ calHTML+=`<div style="font-size:10px;color:#9b9389;text-align:center;padding:4px 0">${w}</div>`; });
+    const firstDow=parseDate(days[0]).getDay();
+    for(let i=0;i<firstDow;i++) calHTML+='<div></div>';
+    days.forEach(k=>{
+      const d=parseDate(k);
+      const h=dayHours[k]||0;
+      const fillPct=totalCalH>0?Math.min(100,Math.round(h/totalCalH*100*calDays.length)):0;
+      const isT=k===todayKey;
+      const fillColor=isZero(k)?'#3a3a4a':h>0?'#d4744a':'#3a3640';
+      calHTML+=`<div class="cal-cell ${isT?'today-cell':''}" title="${fmtDate(k)}">
+        <div class="fill" style="height:${fillPct}%;background:${fillColor};opacity:0.7"></div>
+        <span class="label" style="color:${isT?'#d4744a':h>0?'#e8e3d9':'#6b6660'}">${d.getDate()}</span>
+      </div>`;
     });
-    setConfirmPanel(null);
-  };
+    calHTML+='</div>';
+  });
 
-  // 難易度変更
-  const changeDiff = (msId, panelId, diff) => {
-    updateMs(msId, ms=>{
-      const panels = ms.panels.map(p=>p.id===panelId?{...p,difficulty:diff}:p);
-      const start = parseDate(ms.start);
-      const end   = parseDate(ms.end);
-      const todo  = panels.filter(p=>!p.locked);
-      const schedule = buildSchedule(todo, start, end);
-      return {...ms, panels, schedule};
-    });
-  };
+  // ミッションリスト
+  const panelMap={};
+  ms.panels.forEach(p=>{ panelMap[p.id]=p; });
+  let listHTML='';
+  calDays.forEach(dayKey=>{
+    const isToday=dayKey===todayKey;
+    const isPast=dayKey<todayKey;
+    const zero=zeroLabel(dayKey);
+    const early=isEarlyNight(dayKey);
+    const panelIds=ms.schedule[dayKey]||[];
+    const panels=panelIds.map(id=>panelMap[id]).filter(Boolean);
+    const doneCnt=panels.filter(p=>p.locked).length;
+    const allDone=panels.length>0&&doneCnt===panels.length;
+    const isExpanded=expandedDay===dayKey;
+    let tags='';
+    if(isToday) tags+=`<span class="tag tag-today">TODAY</span>`;
+    if(early) tags+=`<span class="tag tag-early" style="margin-left:6px">早寝</span>`;
+    if(zero&&FIXED_ZERO[dayKey]) tags+=`<span class="tag tag-zero" style="margin-left:6px">${zero}</span>`;
+    if(zero&&TENT_ZERO[dayKey]) tags+=`<span class="tag tag-zero-t" style="margin-left:6px">${zero}</span>`;
+    if(allDone&&panels.length>0) tags+=`<span style="margin-left:6px;font-size:11px;color:#5fae6e">✓クリア</span>`;
 
-  // パネル追加
-  const addPanel = (msId, pageLabel) => {
-    updateMs(msId, ms=>{
-      const samePage = ms.panels.filter(p=>p.page===pageLabel);
-      const newPanel = {id:pageLabel.replace(/\s/g,'')+'-c'+Date.now(), page:pageLabel, label:(samePage.length+1)+'コマ目', difficulty:'mid', locked:false};
-      const panels = [...ms.panels, newPanel];
-      const start = parseDate(ms.start);
-      const end   = parseDate(ms.end);
-      const todo  = panels.filter(p=>!p.locked);
-      const schedule = buildSchedule(todo, start, end);
-      return {...ms, panels, schedule};
-    });
-  };
+    let bodyHTML='';
+    if(isExpanded){
+      let missionsHTML='';
+      if(panels.length===0) missionsHTML=`<div style="font-size:13px;color:#6b6660;padding:4px 0">ミッションなし</div>`;
+      panels.forEach(p=>{
+        const diffOpts=['low','mid','high'].map(d=>`<option value="${d}" ${p.difficulty===d?'selected':''}>${d==='low'?'低':d==='mid'?'中':'高'}</option>`).join('');
+        if(p.locked){
+          missionsHTML+=`<div class="mission-row">
+            <div class="check-btn done">✓</div>
+            <span class="mission-label done">${p.page} ・ ${p.label}</span>
+          </div>`;
+        } else {
+          missionsHTML+=`<div class="mission-row">
+            <button class="check-btn" onclick="requestLock('${p.id}')"></button>
+            <span class="mission-label">${p.page} ・ ${p.label}</span>
+            <select class="diff-sel" onchange="changeDiff('${p.id}',this.value)">${diffOpts}</select>
+          </div>`;
+        }
+      });
+      bodyHTML=`<div class="day-body">${missionsHTML}</div>`;
+    }
 
-  const toggleMode = (msId) => updateMs(msId, ms=>({...ms, mode:ms.mode==='signal'?'easy':'signal'}));
-  const updateDeadline = (msId, d) => updateMs(msId, ms=>({...ms, deadline:d}));
+    listHTML+=`<div class="day-card ${isToday?'today':''} ${isPast&&!isToday?'past':''}">
+      <button class="day-header" onclick="toggleDay('${dayKey}')">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:14px;font-weight:600;color:${isToday?'#d4744a':'inherit'}">${fmtDate(dayKey)}</span>
+          ${tags}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${panels.length>0?`<span style="font-size:12px;color:#9b9389">${doneCnt}/${panels.length}</span>`:''}
+          <span style="color:#9b9389;font-size:16px">${isExpanded?'▲':'▼'}</span>
+        </div>
+      </button>
+      ${bodyHTML}
+    </div>`;
+  });
 
-  const addMs = () => {
-    if(!newTitle.trim()) return;
-    const id='ms-'+Date.now();
-    const start = newDeadline ? dateKey(addDays(parseDate(newDeadline),-30)) : dateKey(new Date());
-    const end   = newDeadline ? dateKey(addDays(parseDate(newDeadline),-1)) : dateKey(addDays(new Date(),30));
-    const fresh = {id, title:newTitle.trim(), mode:newMode, deadline:newDeadline||dateKey(addDays(new Date(),30)), start, end, panels:[], schedule:{}};
-    setMss(prev=>{ const next=[...prev,fresh]; persist(next); return next; });
-    setActiveId(id); setShowAddForm(false); setNewTitle(''); setNewDeadline(''); setNewMode('easy');
-  };
+  // 設定パネル
+  let settingsHTML='';
+  if(showSettings){
+    settingsHTML=`<div class="settings-panel">
+      <div class="settings-row">
+        <span style="font-size:13px">モード</span>
+        <button onclick="toggleMode()" style="padding:6px 12px;border-radius:8px;border:1px solid #3a3640;background:#26222a;color:#e8e3d9;font-size:12px;cursor:pointer">
+          ${ms.mode==='signal'?'信号→のんびりへ':'のんびり→信号へ'}
+        </button>
+      </div>
+      <div class="settings-row">
+        <span style="font-size:13px">締切日</span>
+        <input type="date" value="${ms.deadline}" onchange="updateDeadline(this.value)" style="padding:4px 8px;border-radius:6px;border:1px solid #3a3640;background:#26222a;color:#e8e3d9;font-size:12px"/>
+      </div>
+      <button onclick="confirmDelete()" style="padding:8px;border-radius:8px;border:1px solid #5a3530;background:none;color:#d4574a;font-size:12px;cursor:pointer">この原稿タブを削除</button>
+    </div>`;
+  }
 
-  const deleteMs = (id) => {
-    setMss(prev=>{ const next=prev.filter(m=>m.id!==id); persist(next); if(activeId===id&&next.length>0) setActiveId(next[0].id); return next; });
-    setDeleteConfirm(null);
-  };
-
-  if(!loaded) return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',color:'#9b9389'}}>読み込み中…</div>;
-
-  const activeMs = mss.find(m=>m.id===activeId);
-
-  return (
-    <div style={{minHeight:'100vh'}}>
-      {/* タブ */}
-      <div style={{position:'sticky',top:0,zIndex:20,background:'rgba(28,26,31,0.97)',backdropFilter:'blur(8px)',borderBottom:'1px solid #3a3640'}}>
-        <div style={{display:'flex',overflowX:'auto',padding:'10px 8px 0',gap:4}}>
-          {mss.map(ms=>(
-            <button key={ms.id} onClick={()=>setActiveId(ms.id)} style={{flexShrink:0,padding:'8px 14px',borderRadius:'10px 10px 0 0',border:'none',background:ms.id===activeId?'#26222a':'transparent',color:ms.id===activeId?'#e8e3d9':'#9b9389',fontSize:13,fontWeight:ms.id===activeId?600:400,cursor:'pointer',borderBottom:ms.id===activeId?'2px solid #d4744a':'2px solid transparent'}}>
-              {ms.title}
-            </button>
-          ))}
-          <button onClick={()=>setShowAddForm(true)} style={{flexShrink:0,padding:'8px 10px',background:'none',border:'none',color:'#9b9389',cursor:'pointer'}}><IcoPlus size={16}/></button>
+  app.innerHTML=`
+    <div class="tab-bar">${tabsHTML}</div>
+    <div class="header">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:12px;color:#9b9389;margin-bottom:4px">締切まであと</div>
+          <div class="countdown">${stats.daysLeft}<span style="font-size:14px;font-weight:400;color:#9b9389">日</span></div>
+        </div>
+        <button class="gear-btn" onclick="toggleSettings()">⚙</button>
+      </div>
+      ${settingsHTML}
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-val">${stats.done}<span style="font-size:12px;color:#9b9389">/${stats.total}</span></div>
+          <div class="stat-lbl">コマ完了</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" style="font-size:18px">${pct}<span style="font-size:12px;color:#9b9389">%</span></div>
+          <div class="stat-lbl">進捗</div>
         </div>
       </div>
-
-      {/* 新規追加フォーム */}
-      {showAddForm && (
-        <div style={{padding:16,background:'#26222a',borderBottom:'1px solid #3a3640',display:'flex',flexDirection:'column',gap:10}}>
-          <input value={newTitle} onChange={e=>setNewTitle(e.target.value)} placeholder="原稿名" style={{padding:'8px 10px',borderRadius:8,border:'1px solid #3a3640',background:'#1c1a1f',color:'#e8e3d9',fontSize:14}}/>
-          <input type="date" value={newDeadline} onChange={e=>setNewDeadline(e.target.value)} style={{padding:'8px 10px',borderRadius:8,border:'1px solid #3a3640',background:'#1c1a1f',color:'#e8e3d9',fontSize:14}}/>
-          <div style={{display:'flex',gap:8}}>
-            {['easy','signal'].map(m=>(
-              <button key={m} onClick={()=>setNewMode(m)} style={{flex:1,padding:'8px',borderRadius:8,border:'1px solid '+(newMode===m?'#d4744a':'#3a3640'),background:newMode===m?'#3a2f28':'#1c1a1f',color:'#e8e3d9',fontSize:13,cursor:'pointer'}}>
-                {m==='easy'?'のんびり':'信号モード'}
-              </button>
-            ))}
-          </div>
-          <div style={{display:'flex',gap:8}}>
-            <button onClick={addMs} style={{flex:1,padding:'8px',borderRadius:8,border:'none',background:'#d4744a',color:'#1c1a1f',fontWeight:600,fontSize:13,cursor:'pointer'}}>追加</button>
-            <button onClick={()=>setShowAddForm(false)} style={{flex:1,padding:'8px',borderRadius:8,border:'1px solid #3a3640',background:'none',color:'#9b9389',fontSize:13,cursor:'pointer'}}>キャンセル</button>
-          </div>
-        </div>
-      )}
-
-      {/* メインビュー */}
-      {activeMs && (
-        <ManuscriptView
-          ms={activeMs}
-          expandedDay={expandedDay}
-          setExpandedDay={setExpandedDay}
-          showSettings={showSettings}
-          setShowSettings={setShowSettings}
-          showEditPanel={showEditPanel}
-          setShowEditPanel={setShowEditPanel}
-          onRequestLock={(panelId)=>setConfirmPanel({msId:activeMs.id,panelId})}
-          onChangeDiff={(panelId,diff)=>changeDiff(activeMs.id,panelId,diff)}
-          onAddPanel={(pageLabel)=>addPanel(activeMs.id,pageLabel)}
-          onToggleMode={()=>toggleMode(activeMs.id)}
-          onUpdateDeadline={(d)=>updateDeadline(activeMs.id,d)}
-          onRequestDelete={()=>setDeleteConfirm(activeMs.id)}
-        />
-      )}
-
-      {/* 確定確認ダイアログ */}
-      {confirmPanel && (()=>{
-        const ms = mss.find(m=>m.id===confirmPanel.msId);
-        const panel = ms?.panels.find(p=>p.id===confirmPanel.panelId);
-        return (
-          <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:50,padding:24}}>
-            <div style={{background:'#26222a',borderRadius:16,padding:22,maxWidth:300,border:'1px solid #3a3640',width:'100%'}}>
-              <div style={{fontSize:14,fontWeight:600,marginBottom:8}}>🔒 このコマを確定しますか？</div>
-              <div style={{fontSize:13,color:'#9b9389',marginBottom:4}}>{panel?.page}</div>
-              <div style={{fontSize:15,fontWeight:600,marginBottom:16}}>{panel?.label}</div>
-              <div style={{fontSize:12,color:'#e8a456',marginBottom:16}}>一度確定すると変更できません。</div>
-              <div style={{display:'flex',gap:8}}>
-                <button onClick={()=>lockPanel(confirmPanel.msId,confirmPanel.panelId)} style={{flex:1,padding:'10px',borderRadius:10,border:'none',background:'#d4744a',color:'#1c1a1f',fontWeight:700,fontSize:14,cursor:'pointer'}}>確定する</button>
-                <button onClick={()=>setConfirmPanel(null)} style={{flex:1,padding:'10px',borderRadius:10,border:'1px solid #3a3640',background:'none',color:'#e8e3d9',fontSize:14,cursor:'pointer'}}>やめる</button>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* タブ削除確認 */}
-      {deleteConfirm && (
-        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:50,padding:24}}>
-          <div style={{background:'#26222a',borderRadius:16,padding:22,maxWidth:300,border:'1px solid #3a3640',width:'100%'}}>
-            <div style={{fontSize:14,marginBottom:16}}>「{mss.find(m=>m.id===deleteConfirm)?.title}」を削除します。本当によろしいですか？</div>
-            <div style={{display:'flex',gap:8}}>
-              <button onClick={()=>deleteMs(deleteConfirm)} style={{flex:1,padding:'10px',borderRadius:10,border:'none',background:'#d4574a',color:'#fff',fontSize:14,cursor:'pointer'}}>削除</button>
-              <button onClick={()=>setDeleteConfirm(null)} style={{flex:1,padding:'10px',borderRadius:10,border:'1px solid #3a3640',background:'none',color:'#e8e3d9',fontSize:14,cursor:'pointer'}}>やめる</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+      ${ms.mode==='signal'?`
+      <div class="signal-box">
+        <div style="width:12px;height:12px;border-radius:50%;background:${signalColor};box-shadow:0 0 8px ${signalColor};flex-shrink:0"></div>
+        <span style="font-size:13px;color:${signalColor};font-weight:600">${signalLabel}</span>
+        <span style="font-size:12px;color:#9b9389;margin-left:4px">締切 ${ms.deadline.replace(/-/g,'/')}</span>
+      </div>`:''}
+      <button onclick="toggleCalendar()" style="width:100%;margin-top:10px;padding:8px;border-radius:10px;border:1px solid #3a3640;background:none;color:#9b9389;font-size:12px;cursor:pointer">
+        ${showCalendar?'▲ カレンダーを閉じる':'▼ 進捗カレンダーを見る'}
+      </button>
+      ${showCalendar?calHTML:''}
     </div>
-  );
+    <div class="section-list">${listHTML}</div>
+    <div class="bottom-hint">日付タップで開閉 ・ ○タップで確定（取り消し不可）</div>
+  `;
+
+  // 確認ダイアログ
+  if(confirmTarget){
+    const p=getMs().panels.find(p=>p.id===confirmTarget);
+    document.body.insertAdjacentHTML('beforeend',`
+      <div class="dialog-overlay" id="confirm-dialog">
+        <div class="dialog">
+          <div style="font-size:15px;font-weight:700;margin-bottom:8px">🔒 このコマを確定しますか？</div>
+          <div style="font-size:12px;color:#9b9389;margin-bottom:4px">${p?.page}</div>
+          <div style="font-size:16px;font-weight:600;margin-bottom:12px">${p?.label}</div>
+          <div style="font-size:12px;color:#e8a456;margin-bottom:16px">一度確定すると変更できません。</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-primary" onclick="doLock()">確定する</button>
+            <button class="btn-secondary" onclick="cancelLock()">やめる</button>
+          </div>
+        </div>
+      </div>
+    `);
+  }
+
+  if(deleteConfirm){
+    document.body.insertAdjacentHTML('beforeend',`
+      <div class="dialog-overlay">
+        <div class="dialog">
+          <div style="font-size:14px;margin-bottom:16px">「${getMs()?.title}」を削除します。本当によろしいですか？</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-danger" onclick="doDelete()">削除</button>
+            <button class="btn-secondary" onclick="cancelDelete()">やめる</button>
+          </div>
+        </div>
+      </div>
+    `);
+  }
+
+  if(showAddForm){
+    document.body.insertAdjacentHTML('beforeend',`
+      <div class="dialog-overlay">
+        <div class="dialog">
+          <div style="font-size:15px;font-weight:700;margin-bottom:16px">新しい原稿を追加</div>
+          <input id="new-title" placeholder="原稿名" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #3a3640;background:#1c1a1f;color:#e8e3d9;font-size:14px;margin-bottom:10px"/>
+          <input id="new-deadline" type="date" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #3a3640;background:#1c1a1f;color:#e8e3d9;font-size:14px;margin-bottom:10px"/>
+          <div style="display:flex;gap:8px;margin-bottom:16px">
+            <button id="btn-easy" onclick="setNewMode('easy')" style="flex:1;padding:8px;border-radius:8px;border:1px solid #d4744a;background:#3a2f28;color:#e8e3d9;font-size:13px;cursor:pointer">のんびり</button>
+            <button id="btn-signal" onclick="setNewMode('signal')" style="flex:1;padding:8px;border-radius:8px;border:1px solid #3a3640;background:#1c1a1f;color:#e8e3d9;font-size:13px;cursor:pointer">信号モード</button>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-primary" onclick="doAdd()">追加</button>
+            <button class="btn-secondary" onclick="cancelAdd()">キャンセル</button>
+          </div>
+        </div>
+      </div>
+    `);
+  }
 }
 
-// -------- 原稿ビュー --------
-function ManuscriptView({ ms, expandedDay, setExpandedDay, showSettings, setShowSettings, showEditPanel, setShowEditPanel, onRequestLock, onChangeDiff, onAddPanel, onToggleMode, onUpdateDeadline, onRequestDelete }) {
-  const todayKey = dateKey(new Date());
+// -------- イベントハンドラ --------
+window.switchTab=function(id){ STATE.activeId=id; saveState(STATE); expandedDay=dateKey(new Date()); showSettings=false; render(); }
+window.toggleDay=function(k){ expandedDay=expandedDay===k?null:k; render(); }
+window.toggleSettings=function(){ showSettings=!showSettings; render(); }
+window.toggleCalendar=function(){ showCalendar=!showCalendar; render(); }
+window.toggleMode=function(){ const ms=getMs(); ms.mode=ms.mode==='signal'?'easy':'signal'; saveState(STATE); render(); }
+window.updateDeadline=function(d){ getMs().deadline=d; saveState(STATE); render(); }
 
-  // スケジュールを日付リストに変換
-  const allDays = useMemo(()=>{
-    const days = [];
-    let cur = parseDate(ms.start);
-    const end = parseDate(ms.end);
-    while(cur <= end){ days.push(dateKey(cur)); cur=addDays(cur,1); }
-    return days;
-  },[ms.start, ms.end]);
-
-  const panelMap = useMemo(()=>{
-    const m={};
-    ms.panels.forEach(p=>{ m[p.id]=p; });
-    return m;
-  },[ms.panels]);
-
-  const signal = useMemo(()=>{
-    if(ms.mode!=='signal') return null;
-    return signalInfo(ms.schedule, ms.panels, ms.deadline, todayKey);
-  },[ms, todayKey]);
-
-  // 完了コマ数
-  const donePanels = ms.panels.filter(p=>p.locked).length;
-  const totalPanels = ms.panels.length;
-  const pct = totalPanels>0?Math.round(donePanels/totalPanels*100):0;
-
-  // 完成予測日（のんびりモード用）
-  const prediction = useMemo(()=>{
-    const remaining = ms.panels.filter(p=>!p.locked);
-    if(remaining.length===0) return null;
-    const futureDays = allDays.filter(k=>k>=todayKey&&!isZeroDay(k));
-    const perDay = ms.schedule ? Object.values(ms.schedule).filter(arr=>arr.length>0).length : 0;
-    if(perDay===0||futureDays.length===0) return null;
-    const remainPanels = remaining.length;
-    const daysNeeded = Math.ceil(remainPanels / Math.max(1, remainPanels/Math.max(1,futureDays.length)));
-    return addDays(new Date(), daysNeeded);
-  },[ms, allDays, todayKey]);
-
-  return (
-    <div>
-      {/* ヘッダー */}
-      <div style={{padding:16,borderBottom:'1px solid #3a3640'}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10}}>
-          <div>
-            <div style={{fontSize:12,color:'#9b9389',marginBottom:2}}>締切 {ms.deadline.replace(/-/g,'/')}</div>
-            <div style={{fontSize:13,color:'#9b9389'}}>{donePanels}/{totalPanels} コマ完了</div>
-          </div>
-          <button onClick={()=>setShowSettings(!showSettings)} style={{background:'none',border:'none',padding:6,cursor:'pointer'}}><IcoGear size={18}/></button>
-        </div>
-
-        {/* プログレスバー */}
-        <div style={{height:8,width:'100%',background:'#2e2a32',borderRadius:999,overflow:'hidden',marginBottom:10}}>
-          <div style={{height:'100%',width:pct+'%',background:'linear-gradient(90deg,#d4744a,#e8a456)',borderRadius:999,transition:'width 0.5s'}}/>
-        </div>
-
-        {/* 信号 or 予測 */}
-        {ms.mode==='signal' && signal && (
-          <div style={{padding:'10px 12px',borderRadius:10,background:'#2e2a32',display:'flex',alignItems:'center',gap:10}}>
-            <div style={{width:12,height:12,borderRadius:'50%',background:signal.color,flexShrink:0,boxShadow:'0 0 6px '+signal.color}}/>
-            <div style={{fontSize:13}}>
-              <span style={{color:signal.color,fontWeight:600}}>{signal.label}</span>
-              <span style={{color:'#9b9389',marginLeft:8,fontSize:12}}>締切 {ms.deadline.replace(/-/g,'/')}</span>
-            </div>
-          </div>
-        )}
-        {ms.mode==='easy' && (
-          <div style={{padding:'10px 12px',borderRadius:10,background:'#2e2a32',fontSize:13,color:'#e8e3d9'}}>
-            🌱 {prediction ? fmtDate(prediction)+'ごろ完成予測' : donePanels===totalPanels?'完成！':'計算中…'}
-          </div>
-        )}
-
-        {/* 設定パネル */}
-        {showSettings && (
-          <div style={{marginTop:12,padding:12,borderRadius:10,background:'#1c1a1f',border:'1px solid #3a3640',display:'flex',flexDirection:'column',gap:10}}>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <span style={{fontSize:13}}>モード</span>
-              <button onClick={onToggleMode} style={{padding:'6px 12px',borderRadius:8,border:'1px solid #3a3640',background:'#26222a',color:'#e8e3d9',fontSize:12,cursor:'pointer'}}>
-                {ms.mode==='signal'?'信号→のんびりへ':'のんびり→信号へ'}
-              </button>
-            </div>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <span style={{fontSize:13}}>締切日</span>
-              <input type="date" value={ms.deadline} onChange={e=>onUpdateDeadline(e.target.value)} style={{padding:'4px 8px',borderRadius:6,border:'1px solid #3a3640',background:'#26222a',color:'#e8e3d9',fontSize:12}}/>
-            </div>
-            <button onClick={onRequestDelete} style={{padding:'8px',borderRadius:8,border:'1px solid #5a3530',background:'none',color:'#d4574a',fontSize:12,cursor:'pointer'}}>この原稿タブを削除</button>
-          </div>
-        )}
-      </div>
-
-      {/* カレンダーリスト */}
-      <div style={{padding:'12px',display:'flex',flexDirection:'column',gap:8,paddingBottom:80}}>
-        {allDays.map(dayKey=>{
-          const isToday = dayKey===todayKey;
-          const isPast  = dayKey<todayKey;
-          const isZero  = isZeroDay(dayKey);
-          const zeroLabel = zeroDayLabel(dayKey);
-          const early   = isEarlyNight(parseDate(dayKey));
-          const panelIds = ms.schedule[dayKey]||[];
-          const panels  = panelIds.map(id=>panelMap[id]).filter(Boolean);
-          const doneCnt = panels.filter(p=>p.locked).length;
-          const isExpanded = expandedDay===dayKey;
-          const allDone = panels.length>0&&doneCnt===panels.length;
-
-          return (
-            <div key={dayKey} style={{borderRadius:12,border:'1px solid '+(isToday?'#d4744a':'#3a3640'),background:isPast&&!isToday?'rgba(28,26,31,0.6)':'#26222a',opacity:isPast&&!isToday?0.7:1}}>
-              <button onClick={()=>setExpandedDay(isExpanded?null:dayKey)}
-                style={{width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 16px',background:'none',border:'none',color:'inherit',cursor:'pointer',font:'inherit',textAlign:'left'}}>
-                <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
-                  <span style={{fontSize:14,fontWeight:600,color:isToday?'#d4744a':'inherit'}}>{fmtDate(parseDate(dayKey))}</span>
-                  {isToday&&<span style={{fontSize:10,padding:'2px 6px',borderRadius:4,background:'#d4744a',color:'#1c1a1f',fontWeight:700}}>TODAY</span>}
-                  {early&&<span style={{fontSize:10,padding:'2px 6px',borderRadius:4,background:'#3a3640',color:'#9b9389'}}>早寝</span>}
-                  {zeroLabel&&<span style={{fontSize:10,padding:'2px 6px',borderRadius:4,background:FIXED_ZERO[dayKey]?'#4a3530':'#3a3a4a',color:FIXED_ZERO[dayKey]?'#e8a456':'#a8b8e8'}}>{zeroLabel}</span>}
-                  {allDone&&panels.length>0&&<span style={{fontSize:11,color:'#5fae6e'}}>✓ クリア</span>}
-                </div>
-                <div style={{display:'flex',alignItems:'center',gap:8}}>
-                  {panels.length>0&&<span style={{fontSize:12,color:'#9b9389'}}>{doneCnt}/{panels.length}</span>}
-                  {isExpanded?<IcoChevU size={16}/>:<IcoChevD size={16}/>}
-                </div>
-              </button>
-
-              {isExpanded&&(
-                <div style={{borderTop:'1px solid #3a3640',padding:'8px 16px 14px',display:'flex',flexDirection:'column',gap:10}}>
-                  {isZero&&panels.length===0&&(
-                    <div style={{fontSize:13,color:'#6b6660',padding:'4px 0'}}>作業なし</div>
-                  )}
-                  {panels.map(panel=>(
-                    <div key={panel.id} style={{display:'flex',alignItems:'center',gap:12}}>
-                      {panel.locked ? (
-                        <div style={{width:22,height:22,borderRadius:'50%',background:'#3a3640',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                          <span style={{fontSize:11,color:'#5fae6e'}}>✓</span>
-                        </div>
-                      ) : (
-                        <button onClick={()=>onRequestLock(panel.id)} style={{width:22,height:22,borderRadius:'50%',border:'2px solid #5a5560',background:'none',cursor:'pointer',flexShrink:0,padding:0}}/>
-                      )}
-                      <div style={{flex:1}}>
-                        <div style={{fontSize:13,color:panel.locked?'#6b6660':'#e8e3d9',textDecoration:panel.locked?'line-through':'none'}}>{panel.page} ・ {panel.label}</div>
-                      </div>
-                      {!panel.locked&&(
-                        <select value={panel.difficulty} onChange={e=>onChangeDiff(panel.id,e.target.value)}
-                          style={{fontSize:11,padding:'3px 6px',borderRadius:6,border:'1px solid #3a3640',background:'#1c1a1f',color:'#9b9389',cursor:'pointer'}}>
-                          <option value="low">低</option>
-                          <option value="mid">中</option>
-                          <option value="high">高</option>
-                        </select>
-                      )}
-                    </div>
-                  ))}
-                  {panels.length===0&&!isZero&&(
-                    <div style={{fontSize:13,color:'#6b6660'}}>この日のミッションはありません</div>
-                  )}
-                  {/* ページ別コマ追加ボタン */}
-                  {panels.length>0&&(()=>{
-                    const pages=[...new Set(panels.map(p=>p.page))];
-                    return pages.map(pageLabel=>(
-                      <button key={pageLabel} onClick={()=>onAddPanel(pageLabel)} style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'1px dashed #3a3640',background:'none',color:'#9b9389',cursor:'pointer',alignSelf:'flex-start'}}>
-                        ＋{pageLabel}にコマ追加
-                      </button>
-                    ));
-                  })()}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <div style={{position:'fixed',bottom:0,left:0,right:0,background:'rgba(28,26,31,0.95)',backdropFilter:'blur(8px)',borderTop:'1px solid #3a3640',padding:'10px 16px',fontSize:12,color:'#9b9389',textAlign:'center'}}>
-        日付タップで開閉 ・ ○タップで確定（取り消し不可）
-      </div>
-    </div>
-  );
+window.requestLock=function(id){ confirmTarget=id; render(); }
+window.cancelLock=function(){ confirmTarget=null; const el=document.getElementById('confirm-dialog'); if(el) el.remove(); render(); }
+window.doLock=function(){
+  const ms=getMs();
+  const p=ms.panels.find(p=>p.id===confirmTarget);
+  if(p){ p.locked=true; ms.doneHours=(ms.doneHours||0)+DIFF_H[p.difficulty||'mid']; }
+  // スケジュール再計算
+  ms.schedule=buildSchedule(ms.panels, ms.start, ms.end);
+  confirmTarget=null;
+  saveState(STATE);
+  launchConfetti();
+  render();
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+window.changeDiff=function(id,diff){
+  const ms=getMs();
+  const p=ms.panels.find(p=>p.id===id);
+  if(p){ p.difficulty=diff; ms.schedule=buildSchedule(ms.panels,ms.start,ms.end); saveState(STATE); render(); }
+}
+
+window.confirmDelete=function(){ deleteConfirm=true; render(); }
+window.cancelDelete=function(){ deleteConfirm=false; const els=document.querySelectorAll('.dialog-overlay'); els.forEach(e=>e.remove()); render(); }
+window.doDelete=function(){
+  STATE.manuscripts=STATE.manuscripts.filter(m=>m.id!==STATE.activeId);
+  if(STATE.manuscripts.length>0) STATE.activeId=STATE.manuscripts[0].id;
+  deleteConfirm=false; showSettings=false; saveState(STATE); render();
+}
+
+let newMode='easy';
+window.openAddForm=function(){ showAddForm=true; render(); }
+window.cancelAdd=function(){ showAddForm=false; const els=document.querySelectorAll('.dialog-overlay'); els.forEach(e=>e.remove()); render(); }
+window.setNewMode=function(m){
+  newMode=m;
+  const easy=document.getElementById('btn-easy');
+  const sig=document.getElementById('btn-signal');
+  if(easy&&sig){
+    easy.style.borderColor=m==='easy'?'#d4744a':'#3a3640';
+    easy.style.background=m==='easy'?'#3a2f28':'#1c1a1f';
+    sig.style.borderColor=m==='signal'?'#d4744a':'#3a3640';
+    sig.style.background=m==='signal'?'#3a2f28':'#1c1a1f';
+  }
+}
+window.doAdd=function(){
+  const title=document.getElementById('new-title')?.value?.trim();
+  const deadline=document.getElementById('new-deadline')?.value;
+  if(!title) return;
+  const id='ms-'+Date.now();
+  const start=dateKey(new Date());
+  const end=deadline?dateKey(addDays(parseDate(deadline),-1)):dateKey(addDays(new Date(),30));
+  STATE.manuscripts.push({id,title,mode:newMode,deadline:deadline||dateKey(addDays(new Date(),30)),start,end,panels:[],schedule:{},doneHours:0});
+  STATE.activeId=id;
+  showAddForm=false; newMode='easy';
+  saveState(STATE); render();
+}
+
+render();
 </script>
 </body>
 </html>
